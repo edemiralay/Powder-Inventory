@@ -1,0 +1,571 @@
+{
+  "format": "powder-inventory-scenarios",
+  "schema_version": 1,
+  "app_version": "8.0",
+  "scenarios": [
+    {
+      "name": "Known demand \u2014 baseline",
+      "inputs": {
+        "mode": "known",
+        "monthly_demand": [
+          100,
+          80,
+          120,
+          90,
+          140,
+          110,
+          160,
+          130,
+          100,
+          120,
+          90,
+          150
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 1000,
+          "sigma": 200,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": null
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": null,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": null,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": null,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 60,
+          "simulation_years": 8,
+          "replications": 5,
+          "warmup_years": 2,
+          "training_replications": 2,
+          "min_review_days": 1,
+          "max_review_days": 180
+        }
+      }
+    },
+    {
+      "name": "Known demand \u2014 size \u00d7 0.8",
+      "inputs": {
+        "mode": "known",
+        "monthly_demand": [
+          80.0,
+          64.0,
+          96.0,
+          72.0,
+          112.0,
+          88.0,
+          128.0,
+          104.0,
+          80.0,
+          96.0,
+          72.0,
+          120.0
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 1000,
+          "sigma": 200,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": null
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": null,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": null,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": null,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 60,
+          "simulation_years": 8,
+          "replications": 5,
+          "warmup_years": 2,
+          "training_replications": 2,
+          "min_review_days": 1,
+          "max_review_days": 180
+        }
+      }
+    },
+    {
+      "name": "Known demand \u2014 size \u00d7 1.2",
+      "inputs": {
+        "mode": "known",
+        "monthly_demand": [
+          120.0,
+          96.0,
+          144.0,
+          108.0,
+          168.0,
+          132.0,
+          192.0,
+          156.0,
+          120.0,
+          144.0,
+          108.0,
+          180.0
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 1000,
+          "sigma": 200,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": null
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": null,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": null,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": null,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 60,
+          "simulation_years": 8,
+          "replications": 5,
+          "warmup_years": 2,
+          "training_replications": 2,
+          "min_review_days": 1,
+          "max_review_days": 180
+        }
+      }
+    },
+    {
+      "name": "Uncertain demand \u2014 ROP demonstration",
+      "inputs": {
+        "mode": "uncertain",
+        "monthly_demand": [
+          1000,
+          900,
+          1100,
+          1200,
+          800,
+          1000,
+          950,
+          1050,
+          1150,
+          850,
+          1000,
+          1000
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 100,
+          "sigma": 15,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": null
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": null,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": null,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": null,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 10,
+          "simulation_years": 1,
+          "replications": 2,
+          "warmup_years": 0,
+          "training_replications": 1,
+          "min_review_days": 1,
+          "max_review_days": 60
+        }
+      }
+    },
+    {
+      "name": "Intermittent demand \u2014 OUTL demonstration",
+      "inputs": {
+        "mode": "uncertain",
+        "monthly_demand": [
+          1000,
+          900,
+          1100,
+          1200,
+          800,
+          1000,
+          950,
+          1050,
+          1150,
+          850,
+          1000,
+          1000
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 100,
+          "sigma": 15,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": 0.3
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": null,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": null,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": null,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 10,
+          "simulation_years": 1,
+          "replications": 2,
+          "warmup_years": 0,
+          "training_replications": 1,
+          "min_review_days": 1,
+          "max_review_days": 60
+        }
+      }
+    },
+    {
+      "name": "No annual supply capacity \u2014 retained outcome",
+      "inputs": {
+        "mode": "uncertain",
+        "monthly_demand": [
+          1000,
+          900,
+          1100,
+          1200,
+          800,
+          1000,
+          950,
+          1050,
+          1150,
+          850,
+          1000,
+          1000
+        ],
+        "demand": {
+          "family": "Normal",
+          "mu": 100,
+          "sigma": 15,
+          "lam": 1000,
+          "q": 0.5,
+          "unit": 1,
+          "p": 1,
+          "occurrence_probability": null
+        },
+        "costs": {
+          "h": 0.2,
+          "cb": 50,
+          "ce": 0,
+          "tc": 0.002,
+          "te": 0,
+          "scrap": 12000,
+          "yield": 0.8,
+          "scrap_price": 0,
+          "scrap_distance": 0,
+          "amortization": 10,
+          "service": 0.95
+        },
+        "sources": [
+          {
+            "id": 1,
+            "name": "On-site recycled production",
+            "lead": 2,
+            "cp": 10,
+            "ep": 0,
+            "co": 100,
+            "distance": 0,
+            "capacity": 0,
+            "investment": 12000
+          },
+          {
+            "id": 2,
+            "name": "Purchased recycled powder",
+            "lead": 1,
+            "cp": 14,
+            "ep": 0,
+            "co": 60,
+            "distance": 200,
+            "capacity": 0,
+            "investment": 0
+          },
+          {
+            "id": 3,
+            "name": "Purchased commercial powder",
+            "lead": 1,
+            "cp": 18,
+            "ep": 0,
+            "co": 50,
+            "distance": 300,
+            "capacity": 0,
+            "investment": 0
+          }
+        ],
+        "settings": {
+          "adi_cutoff": 1.32,
+          "cv2_cutoff": 0.49,
+          "max_review": 6,
+          "samples": 20000,
+          "seed": 42,
+          "allow_pre_horizon": true,
+          "coordination": "compare",
+          "search_candidates": 10,
+          "simulation_years": 1,
+          "replications": 2,
+          "warmup_years": 0,
+          "training_replications": 1,
+          "min_review_days": 1,
+          "max_review_days": 60
+        }
+      }
+    }
+  ]
+}
