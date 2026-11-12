@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in · Powder Inventory</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;min-height:100svh;display:grid;place-items:center;background:#f3f7f6;color:#15343c;font:16px/1.5 system-ui,sans-serif}main{width:min(100%,430px);padding:30px;background:white;border:1px solid #dbe6e3;border-radius:16px;box-shadow:0 8px 24px #183c3812}.brand{color:#005e58;font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:.8rem}h1{line-height:1.15;margin:.5rem 0}p{color:#506970}label{display:block;font-weight:600;margin-top:14px}input,button{width:100%;border-radius:8px;font:inherit;padding:10px 12px}input{margin-top:4px;border:1px solid #a8beb8}button{margin-top:20px;background:#005e58;color:white;border:0;font-weight:650;cursor:pointer}.error{color:#932524}
+</style>
+</head>
+<body><main>
+<div class="brand">Powder Inventory · Decision Support</div>
+<h1>Sign in</h1>
+<p>Enter your credentials to access the private powder inventory app.</p>
+{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/login">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<label for="username">Username</label>
+<input id="username" name="username" autocomplete="username" maxlength="64" required>
+<label for="password">Password</label>
+<input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required>
+<button type="submit">Sign in</button>
+</form>
+</main></body>
+</html>

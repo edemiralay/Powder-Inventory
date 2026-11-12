@@ -1,0 +1,514 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Powder inventory planning</title><style>
+:root{--ink:#15343c;--muted:#506970;--teal:#007e75;--deep:#005e58;--line:#dbe6e3;--bg:#f3f7f6;--soft:#e9f4f0;--white:#fff;--dark:#102f36;font:15px/1.55 Inter,'Segoe UI',system-ui,sans-serif;color:var(--ink);color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg)}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.16;letter-spacing:-.025em}h2{font-size:clamp(21px,2.5vw,27px)}h3{font-size:17px}p+ p{margin-top:.7rem}.help,.intro{color:var(--muted);line-height:1.6}.help{font-size:14px}small{display:block;color:var(--muted);font-size:12px}.hidden{display:none!important}.topbar{background:white;border-bottom:1px solid var(--line)}.top-inner,main,.footer-inner{max-width:1320px;margin:auto;padding-inline:clamp(16px,4vw,54px)}.top-inner{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:.07em}.brand-mark{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:var(--dark);color:#a1e6d4}.brand small{margin-top:1px;letter-spacing:.13em;font-size:10px;font-weight:650;text-transform:uppercase}.version{color:var(--muted);font-size:12px;white-space:nowrap}.version::before{content:'';width:6px;height:6px;background:#159a84;border-radius:50%;display:inline-block;margin-right:8px}main{padding-top:34px;padding-bottom:50px;min-height:calc(100vh - 144px)}.footer-inner{border-top:1px solid var(--line);padding-block:18px;display:flex;justify-content:space-between;gap:14px;color:var(--muted);font-size:12px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.17em;font-weight:750;color:var(--teal)}.eyebrow+*{margin-top:9px}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;overflow:hidden;position:relative;border-radius:20px;background:radial-gradient(ellipse at 80% 30%,#1b5a59,transparent 66%),#102f36;color:white;min-height:330px}.hero-content{padding:clamp(25px,5vw,60px);padding-right:8px;z-index:1}.hero .eyebrow{color:#9ae6d2}.hero h1{font-size:clamp(36px,4.8vw,65px);font-weight:640;letter-spacing:-.06em;max-width:650px;margin-bottom:18px}.hero p{color:#c6dfdd;max-width:490px;font-size:16px}.hero-art{display:block;width:100%;height:auto;align-self:center}.hero-art text{font-family:inherit;letter-spacing:.14em}#home-workspace{padding:0;border:0;background:transparent;box-shadow:none;margin:0}.home-choices{margin-top:30px}.home-choices h2{font-size:23px;margin-bottom:16px}.batch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.choice{display:flex;flex-direction:column;align-items:flex-start;padding:24px;background:white;border:1px solid var(--line);border-radius:15px;transition:border-color .16s,box-shadow .16s}.choice:hover{border-color:#7fbfb0;box-shadow:0 5px 22px #143d3710}.choice-icon{width:40px;height:40px;display:grid;place-items:center;background:var(--soft);border-radius:10px;color:var(--teal);margin-bottom:15px}.choice h3{font-size:20px}.choice p{margin:9px 0 20px;flex:1}.choice button{width:100%;justify-content:space-between}.choice button span{font-size:17px;margin-left:12px}#app-nav{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:25px}#app-nav h1{font-size:clamp(28px,3.5vw,42px);font-weight:650;letter-spacing:-.045em}#app-nav p:not(.eyebrow){margin-top:8px}.toolbar{display:flex;align-items:center}.workflow-layout{display:grid;grid-template-columns:218px minmax(0,1fr);align-items:start;gap:22px}.workflow-content{min-width:0}.wizard-progress{background:white;border:1px solid var(--line);border-radius:13px;padding:17px;position:sticky;top:18px}.wizard-progress h2{font-size:15px}.wizard-progress p{font-size:12px;color:var(--muted);margin:6px 0 10px}.wizard-progress ol{list-style:none;padding:13px 0 0;margin:0;display:grid;gap:4px}.wizard-progress li{display:flex;gap:9px;align-items:center;color:var(--muted);font-size:12px;padding:6px 3px}.step-index{width:21px;height:21px;flex:0 0 21px;display:grid;place-items:center;border-radius:50%;background:#edf3f1;color:#4b696e;font-size:10px;font-weight:700}.wizard-progress li[aria-current=step]{color:var(--deep);font-weight:700}.wizard-progress li[aria-current=step] .step-index{background:var(--teal);color:white}.wizard-progress li.is-complete .step-index{background:#dcefe8;color:var(--deep)}progress{width:100%;height:7px;accent-color:var(--teal);display:block}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:clamp(16px,2.5vw,26px);margin:0 0 16px;min-width:0;box-shadow:0 2px 6px #183c3805}.card h2{margin-bottom:15px}.card h3{margin:22px 0 10px}.card>p+.actions{margin-top:16px}.card>.help{margin-bottom:13px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:12px 0}.field{min-width:0}.field-label,.checkbox-line{display:flex;align-items:center;gap:7px}.field-label{min-height:24px}.checkbox-line{margin-block:12px}.checkbox-line input{width:auto;margin:0}label{font-size:13px;font-weight:650;color:#294b52}input,select,textarea,button{font:inherit}input:not([type=checkbox]),select,textarea{width:100%;min-width:0;border:1px solid #cbdcd8;border-radius:8px;color:var(--ink);background:#fbfdfc;padding:10px 11px;margin:5px 0 3px;min-height:43px}input[type=file]{max-width:100%;font-size:12px}textarea{min-height:110px;resize:vertical}input:focus,select:focus,textarea:focus{outline:2px solid #69b9a9;outline-offset:1px;background:white}button{display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:white;border:1px solid transparent;border-radius:8px;padding:10px 15px;font-weight:650;line-height:1.3;cursor:pointer;transition:background .15s}button:hover{background:var(--deep)}button:disabled{opacity:.52;cursor:not-allowed}button:focus-visible,summary:focus-visible{outline:3px solid #6ec7b5;outline-offset:3px}.subtle{background:#f4f9f7;color:#1d5553;border-color:var(--line)}.subtle:hover{background:#e6f3ee}.compact{font-size:12px;padding:7px 10px}.info-button{width:23px;height:23px;flex:0 0 23px;border:1px solid #bad6cf;border-radius:50%;background:#edf7f3;color:var(--deep);padding:0;font:700 13px/1 Georgia,serif;vertical-align:middle}.info-button:hover{background:#d8efe7}h2 .info-button,h3 .info-button{margin-left:8px}.actions,.wizard-nav{display:flex;flex-wrap:wrap;align-items:center;gap:9px}.wizard-nav{justify-content:space-between;margin:12px 0 20px}.wizard-nav #wizard-next,.wizard-nav #calculate{margin-left:auto}.tag{display:inline-block;background:var(--soft);color:var(--deep);font-size:13px;font-weight:700;padding:4px 9px;border-radius:5px}.status,.batch-status{font-size:13px;color:var(--muted);margin-top:8px}.status:empty,.batch-status:empty{display:none}.scenario-notice{background:var(--soft);border-left:3px solid var(--teal);padding:12px 14px;border-radius:6px;margin:12px 0;font-size:14px}.error{color:#96283b;background:#fceef0;border:1px solid #f3cdd4;padding:11px 13px;border-radius:8px}.scroll{overflow:auto;border:1px solid var(--line);border-radius:9px;margin:8px 0 16px}table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}th,td{padding:10px 11px;border-bottom:1px solid #e7efed;vertical-align:middle}th{background:#eef5f2;color:#355a60;font-weight:700;font-size:12px}tbody tr:nth-child(even){background:#fafcfb}tbody tr:last-child td{border-bottom:0}.source-field{display:flex;gap:4px;align-items:center}.source-field input{min-width:76px}#source-inputs th{min-width:100px}#source-inputs th:first-child{min-width:38px}#source-inputs .source-field input[type=text]{min-width:128px}.batch-name{min-width:160px!important}#batch-progress{margin-top:16px}.queue-count{font-size:13px;color:var(--muted);margin-left:5px}summary{cursor:pointer;font-weight:650}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:16px 0}.metrics>div{background:#edf6f2;border:1px solid #d7eae2;border-radius:10px;padding:13px;color:#436269;font-size:12px}.metrics strong{display:block;color:var(--deep);font-size:clamp(19px,2.4vw,25px);font-weight:730;overflow-wrap:anywhere}.comparison{background:#f6faf8;border:1px solid var(--line);border-radius:11px;padding:15px;margin:14px 0}.comparison h3{margin:0 0 5px}.chart-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(55px,1.2fr) auto;align-items:center;gap:9px;margin-top:9px;font-size:12px}.chart-row>span:first-child{overflow-wrap:anywhere}.chart-row strong{font-variant-numeric:tabular-nums}.chart-track{position:relative;height:9px;background:#e0ebe7;border-radius:3px;overflow:hidden}.chart-track i{position:absolute;height:100%;background:#2d8b7b;border-radius:3px}.chart-track i.credit{background:#b57c35}.danger{color:#96283b}.success{color:var(--deep)}hr{border:0;border-top:1px solid var(--line);margin:22px 0}#field-information{box-sizing:border-box;width:min(400px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:21px;border:1px solid var(--line);border-radius:13px;background:white;color:var(--ink);box-shadow:0 16px 40px #152d4b26}#field-information header{display:flex;justify-content:space-between;gap:12px}#field-information h2{font-size:19px}#field-information p{margin-top:10px}#close-information{background:#eff5f3;color:var(--ink);padding:4px 8px;font-size:20px}
+@media(max-width:950px){.workflow-layout{grid-template-columns:175px minmax(0,1fr);gap:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:285px}}
+@media(max-width:700px){main{padding-top:19px}.hero{grid-template-columns:1fr;min-height:0}.hero-content{padding:28px 22px 14px}.hero-art{max-height:190px}.hero h1{font-size:39px}.hero p{font-size:14px}.batch-grid,.workflow-layout{grid-template-columns:1fr}.wizard-progress{position:static;padding:13px}.wizard-progress ol{display:none}#app-nav{margin-bottom:16px}#app-nav h1{font-size:29px}.choice{padding:18px}.footer-inner{flex-wrap:wrap}}
+@media(max-width:450px){.grid{grid-template-columns:1fr}.top-inner{min-height:64px}.brand{font-size:13px;gap:8px}.brand-mark{width:34px;height:34px}.brand small{font-size:8px}.version{font-size:10px}.toolbar button{padding:8px}.chart-row{grid-template-columns:minmax(65px,1fr) minmax(42px,.7fr) auto}.card h2{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header class="topbar"><div class="top-inner"><div class="brand"><span class="brand-mark"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8.5 4.5L12 12 3.5 7.5 12 3Zm-8.5 9L12 16.5l8.5-4.5M3.5 16.5 12 21l8.5-4.5"/></svg></span><div>POWDER INVENTORY<small>Decision support</small></div></div><span class="version" id="app-version">App version __APP_VERSION__</span></div></header><main><section id="home-workspace" class="card" aria-labelledby="start-heading"><div class="hero"><div class="hero-content"><p class="eyebrow">Circular powder supply</p><h1>Plan your powder inventory.</h1><p>Compare on-site production and purchased powder under your demand, cost, and service requirements.</p></div><svg class="hero-art" viewBox="0 0 540 340" aria-hidden="true">
+<defs><pattern id="hero-grid" width="27" height="27" patternUnits="userSpaceOnUse"><path d="M27 0H0V27" fill="none" stroke="#c9fff1" stroke-opacity=".12"/></pattern><linearGradient id="hero-fill" x2="0" y2="1"><stop stop-color="#85dbc2" stop-opacity=".25"/><stop offset="1" stop-color="#85dbc2" stop-opacity="0"/></linearGradient></defs>
+<rect x="28" y="32" width="469" height="274" rx="15" fill="#122f36" fill-opacity=".34" stroke="#91d9c3" stroke-opacity=".33"/>
+<rect x="47" y="87" width="430" height="185" fill="url(#hero-grid)"/>
+<text x="49" y="65" fill="#a9dacc" font-size="10">INVENTORY POLICY · SCHEMATIC</text>
+<path d="M50 240 L50 122 L91 142 L136 166 L171 185 L171 115 L221 143 L272 168 L310 187 L310 108 L366 135 L409 160 L470 184 L470 240Z" fill="url(#hero-fill)"/>
+<path d="M50 122 91 142 136 166 171 185V115L221 143 272 168 310 187V108L366 135 409 160 470 184" fill="none" stroke="#9dedcf" stroke-width="2.6" stroke-linejoin="round"/>
+<path d="M50 190H473" stroke="#e4bc78" stroke-dasharray="6 6" stroke-opacity=".85"/>
+<circle cx="171" cy="185" r="4" fill="#f0c87c"/><circle cx="310" cy="187" r="4" fill="#f0c87c"/>
+<path d="M50 240H470" stroke="#9ed6cb" stroke-opacity=".35"/><text x="50" y="266" fill="#b5ded4" font-size="10">STOCK ON HAND</text><text x="470" y="266" fill="#b5ded4" text-anchor="end" font-size="10">TIME →</text>
+</svg></div><div class="home-choices"><h2 id="start-heading">Choose a workflow</h2><div class="batch-grid">
+<article class="choice"><span class="choice-icon"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 8h7m-7 4h2m3 0h2m-7 4h2m3 0h2"/></svg></span><h3>Single-scenario calculation</h3><p class="help">Enter one set of assumptions and find the lowest-cost feasible sourcing and replenishment plan.</p><button id="choose-single" type="button">Start a single calculation <span aria-hidden="true">↗</span></button></article>
+<article class="choice"><span class="choice-icon"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16v-5m6 5V5m6 11V8"/></svg></span><h3>Multiple-scenario analysis</h3><p class="help">Build a list of scenarios, vary your assumptions, then compare and export the results.</p><button id="choose-multiple" type="button" class="subtle">Start scenario analysis <span aria-hidden="true">↗</span></button></article></div></div></section><div id="app-nav" class="toolbar hidden"><div><p class="eyebrow">Powder inventory planning</p><h1 id="workspace-title"></h1><p class="intro" id="workspace-description"></p></div><nav class="toolbar" aria-label="App navigation"><button id="home-view" type="button" class="subtle">← Home</button></nav></div>
+<div id="single-workspace" class="hidden"><div class="workflow-layout"><aside class="wizard-progress" aria-label="Calculation steps"><h2>Scenario setup</h2><p id="wizard-progress" role="status" aria-live="polite"></p><progress id="wizard-meter" value="1" max="6" aria-label="Form progress"></progress><ol id="wizard-steps"></ol></aside><div class="workflow-content">
+<section id="step-start" class="wizard-pane card"><h2>Do you know the demand?<button type="button" class="info-button" data-help-key="mode" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Demand knowledge" title="Information about Demand knowledge"><span aria-hidden="true">i</span></button></h2><select id="mode" aria-label="Do you know the demand?"><option value="uncertain">No — demand is uncertain</option><option value="known">Yes — demand is known for each month</option></select></section>
+<section id="step-demand" class="wizard-pane card hidden"><h2>Demand information</h2><div id="known" class="hidden"><div class="field"><div class="field-label"><label for="monthly">Monthly demand quantities (kg)</label><button type="button" class="info-button" data-help-key="monthly" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Monthly demand quantities" title="Information about Monthly demand quantities"><span aria-hidden="true">i</span></button></div><textarea id="monthly"></textarea></div><div class="field"><div class="checkbox-line"><input type="checkbox" id="pre"><label for="pre">Allow order releases before month 1</label><button type="button" class="info-button" data-help-key="pre" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Releases before the planning horizon" title="Information about Releases before the planning horizon"><span aria-hidden="true">i</span></button></div></div></div>
+<div id="uncertain"><h3>Demand distribution</h3><div class="grid"><div class="field"><div class="field-label"><label for="family">Distribution</label><button type="button" class="info-button" data-help-key="family" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Demand distribution" title="Information about Demand distribution"><span aria-hidden="true">i</span></button></div><select id="family"><option>Normal</option><option>Poisson</option><option>Geometric</option></select></div>
+<div class="field"><div class="field-label"><label for="occurrence_probability">Observed fraction of months with positive demand (optional)</label><button type="button" class="info-button" data-help-key="occurrence_probability" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Positive-demand months" title="Information about Positive-demand months"><span aria-hidden="true">i</span></button></div><input id="occurrence_probability" type="number" min="0.000001" max="1" step="0.01"></div></div>
+<div class="grid"><div class="field normal"><div class="field-label"><label for="mu">Underlying Normal mean (kg)</label><button type="button" class="info-button" data-help-key="mu" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Underlying Normal mean" title="Information about Underlying Normal mean"><span aria-hidden="true">i</span></button></div><input id="mu" type="number" step="any"></div><div class="field normal"><div class="field-label"><label for="sigma">Underlying Normal standard deviation (kg)</label><button type="button" class="info-button" data-help-key="sigma" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Underlying Normal standard deviation" title="Information about Underlying Normal standard deviation"><span aria-hidden="true">i</span></button></div><input id="sigma" type="number" min="0" step="any"></div>
+<div class="field poisson"><div class="field-label"><label for="lam">Monthly Poisson lambda</label><button type="button" class="info-button" data-help-key="lam" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Monthly Poisson lambda" title="Information about Monthly Poisson lambda"><span aria-hidden="true">i</span></button></div><input id="lam" type="number" min="0" step="any"></div><div class="field geometric"><div class="field-label"><label for="q">Geometric q</label><button type="button" class="info-button" data-help-key="q" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Geometric q" title="Information about Geometric q"><span aria-hidden="true">i</span></button></div><input id="q" type="number" min="0.000001" max="0.999999" step="0.01"></div><div class="field counts"><div class="field-label"><label for="unit">Powder amount per count (kg)</label><button type="button" class="info-button" data-help-key="unit" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Powder amount per count" title="Information about Powder amount per count"><span aria-hidden="true">i</span></button></div><input id="unit" type="number" min="0" step="any"></div></div>
+
+
+</div></section>
+<section id="step-classification" class="wizard-pane card hidden"><h2>Your demand characterization</h2><div id="classification" class="help"></div><p class="help">Continue to enter supply and cost information for the selected model.</p></section>
+<section id="step-supply" class="wizard-pane hidden"><div class="card" id="supply-step"><h2>Supply and cost information</h2><div class="field"><div class="field-label"><label for="excel">Optional: import common inputs from an existing Normal or Poisson workbook</label><button type="button" class="info-button" data-help-key="excel" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Import common inputs" title="Information about Import common inputs"><span aria-hidden="true">i</span></button></div><input type="file" id="excel" accept=".xlsx"></div><div class="status" id="import-status"></div>
+<div id="cost-inputs" class="grid"></div><h3>Source information<button type="button" class="info-button" data-help-key="sources" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Available powder sources" title="Information about Available powder sources"><span aria-hidden="true">i</span></button></h3><div class="scroll"><table id="source-inputs"></table></div><p><button id="add-source" type="button" class="subtle">+ Add source</button> <span id="source-count" class="help" role="status" aria-live="polite"></span></p></div>
+</section>
+<section id="step-policy" class="wizard-pane hidden"><div class="card hidden" id="policy-step"><h2>Replenishment coordination<button type="button" class="info-button" data-help-key="simulation" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Calculation settings" title="Information about Calculation settings"><span aria-hidden="true">i</span></button></h2>
+<div class="field"><div class="field-label"><label for="coordination">Policy</label><button type="button" class="info-button" data-help-key="coordination" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Replenishment coordination" title="Information about Replenishment coordination"><span aria-hidden="true">i</span></button></div><select id="coordination"><option value="compare">Compare all three</option><option value="synchronized">Synchronized receipts</option><option value="simultaneous">Simultaneous order release</option><option value="independent">Coordinated source-specific ordering</option></select></div>
+
+<div class="grid"><div class="field"><div class="field-label"><label for="search_candidates">Search candidates per alternative</label><button type="button" class="info-button" data-help-key="search_candidates" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Search candidates per alternative" title="Information about Search candidates per alternative"><span aria-hidden="true">i</span></button></div><input id="search_candidates" type="number" value="60" min="10" max="500"></div><div class="field"><div class="field-label"><label for="simulation_years">Evaluation years after warm-up</label><button type="button" class="info-button" data-help-key="simulation_years" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Evaluation years" title="Information about Evaluation years"><span aria-hidden="true">i</span></button></div><input id="simulation_years" type="number" value="8" min="1" max="50"></div><div class="field"><div class="field-label"><label for="replications">Validation replications</label><button type="button" class="info-button" data-help-key="replications" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Validation replications" title="Information about Validation replications"><span aria-hidden="true">i</span></button></div><input id="replications" type="number" value="5" min="2" max="30"></div></div></div><div id="service-holder" class="card"></div><details class="card hidden" id="settings-step"><summary>Calculation settings</summary><div class="grid"><div class="field"><div class="field-label"><label for="max_review_days">Maximum OUTL review interval (days)</label><button type="button" class="info-button" data-help-key="max_review_days" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Maximum OUTL review interval" title="Information about Maximum OUTL review interval"><span aria-hidden="true">i</span></button></div><input id="max_review_days" type="number" min="1" max="720"></div><div class="field"><div class="field-label"><label for="min_review_days">Minimum OUTL review interval (days)</label><button type="button" class="info-button" data-help-key="min_review_days" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Minimum OUTL review interval" title="Information about Minimum OUTL review interval"><span aria-hidden="true">i</span></button></div><input id="min_review_days" type="number" min="1" max="720"></div><div class="field"><div class="field-label"><label for="warmup_years">Warm-up years</label><button type="button" class="info-button" data-help-key="warmup_years" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Warm-up years" title="Information about Warm-up years"><span aria-hidden="true">i</span></button></div><input id="warmup_years" type="number" min="0" max="20"></div><div class="field"><div class="field-label"><label for="training_replications">Search replications</label><button type="button" class="info-button" data-help-key="training_replications" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Search replications" title="Information about Search replications"><span aria-hidden="true">i</span></button></div><input id="training_replications" type="number" min="1" max="10"></div><div class="field"><div class="field-label"><label for="seed">Random seed</label><button type="button" class="info-button" data-help-key="seed" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Random seed" title="Information about Random seed"><span aria-hidden="true">i</span></button></div><input id="seed" type="number" min="0"></div></div></details>
+</section>
+<section id="step-review" class="wizard-pane card hidden"><div id="review-content"></div><hr><h3>Compare different operating conditions</h3><p class="help">Save these inputs as a named scenario. Then create variations and evaluate your scenario list together.</p><div class="field"><div class="field-label"><label for="scenario-name">Scenario name</label><button type="button" class="info-button" data-help-key="scenario-name" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Scenario name" title="Information about Scenario name"><span aria-hidden="true">i</span></button></div><input id="scenario-name" maxlength="120" placeholder="For example: Baseline"></div><p id="scenario-save-notice" class="help"></p><div class="actions"><button id="save-scenario" type="button" class="subtle">Add to scenario analysis</button><button id="save-scenario-copy" type="button" class="subtle hidden">Save as a new scenario</button></div></section>
+<div id="error" role="alert"></div>
+<div class="wizard-nav"><button id="wizard-back" class="subtle" type="button">Back</button><button id="wizard-next" type="button">Continue</button><button id="calculate" class="hidden" type="button">Calculate total cost</button></div>
+<span id="busy" class="help" role="status"></span><div id="results" aria-live="polite"></div></div></div></div>
+<section id="batch-workspace" class="hidden" aria-label="Scenario analysis">
+<div class="card"><h2>Multiple scenarios <span class="queue-count" id="batch-count"></span></h2><p class="help">Each scenario has its own demand and operating conditions. The app evaluates the supply alternatives within each scenario. Saved scenarios keep their inputs until you explicitly edit and save them. Save your scenario list before closing this tab.</p><p id="batch-empty" class="scenario-notice">Start by configuring a scenario and adding it from the review step, or import a previously saved scenario list.</p><div class="actions"><button id="configure-baseline" class="subtle" type="button">Configure a baseline</button><button id="load-demo-scenarios" class="subtle" type="button">Load demonstration scenarios</button><div class="field subtle compact"><div class="field-label"><label for="import-scenarios">Import scenario list (JSON)</label><button type="button" class="info-button" data-help-key="import-scenarios" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Import a scenario list" title="Information about Import a scenario list"><span aria-hidden="true">i</span></button></div><input id="import-scenarios" type="file" accept=".json,application/json"></div><button id="export-scenarios" class="subtle" type="button">Save scenario list</button></div></div>
+<div class="card hidden" id="variation-card"><h2>Create variations</h2><div class="grid"><div class="field"><div class="field-label"><label for="variation-base">Starting scenario</label><button type="button" class="info-button" data-help-key="variation-base" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Starting scenario" title="Information about Starting scenario"><span aria-hidden="true">i</span></button></div><select id="variation-base"></select></div><div class="field"><div class="field-label"><label for="variation-field">Input to vary</label><button type="button" class="info-button" data-help-key="variation-field" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Input to vary" title="Information about Input to vary"><span aria-hidden="true">i</span></button></div><select id="variation-field"></select></div><div class="field"><div class="field-label"><label for="variation-values">Values, separated by commas</label><button type="button" class="info-button" data-help-key="variation-values" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about Variation values" title="Information about Variation values"><span aria-hidden="true">i</span></button></div><input id="variation-values" placeholder="For example: 0.85, 0.90, 0.95"></div></div><p id="variation-help" class="help"></p><button id="generate-scenarios" class="subtle" type="button">Add variations</button></div>
+<div class="card"><h2>Scenario list</h2><div id="scenario-queue"></div><div class="actions"><button id="run-scenarios" type="button">Run all scenarios</button><button id="resume-scenarios" type="button" class="subtle">Run remaining / retry failed</button><button id="stop-scenarios" type="button" class="subtle hidden">Stop after current scenario</button><button id="clear-scenarios" type="button" class="subtle">Clear list</button></div><progress id="batch-progress" value="0" max="1" class="hidden" aria-label="Completed scenario evaluations"></progress><p id="batch-status" role="status" aria-live="polite" class="batch-status"></p><div id="batch-error" role="alert"></div></div>
+<div id="batch-outputs" class="card hidden"><h2>Results across scenarios</h2><p class="help">Compare each scenario’s lowest-cost feasible solution found. Open a scenario to inspect all evaluated alternatives. Unsuccessful evaluations remain in the list.</p><div id="batch-summary"></div><div class="actions"><button id="export-batch-json" class="subtle" type="button">Download full results (JSON)</button><button id="export-batch-csv" class="subtle" type="button">Download comparison (CSV)</button><button id="export-alternatives-csv" class="subtle" type="button">Download all alternatives (CSV)</button></div></div>
+</section>
+</main><footer><div class="footer-inner"><span>Powder inventory planning</span><span>Circular supply and replenishment</span></div></footer>
+<aside id="field-information" popover="auto" role="dialog" aria-labelledby="information-title" aria-describedby="information-body"><header><h2 id="information-title"></h2><button id="close-information" type="button" popovertarget="field-information" popovertargetaction="hide" aria-label="Close field information" autofocus>×</button></header><p id="information-body"></p></aside>
+<script>
+const defaults=__DEFAULT__;
+let lastResult=null;
+let batchRunning=false;
+let savedExtraSettings={};
+const $=id=>document.getElementById(id);
+const num=id=>$(id).value.trim()===''?null:Number($(id).value);
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=value=>typeof value==='number'?value.toLocaleString(undefined,{maximumFractionDigits:3}):esc(value);
+const fieldInformation={"mode": {"title": "Demand knowledge", "body": "Choose Yes when the required quantity is known for each month of the planning horizon. Choose No when demand is uncertain. A forecast mean alone is not a known monthly demand schedule."}, "monthly": {"title": "Monthly demand quantities", "body": "Enter 1–60 nonnegative monthly quantities in kg, separated by commas. Month 1 starts the planning horizon. Wagner–Whitin determines receipt months and lot sizes. Total demand must be positive."}, "pre": {"title": "Releases before the planning horizon", "body": "Allow orders to be released before month 1 so that receipts can meet early demand despite supplier lead times. When this is not allowed, configurations requiring earlier releases may have no feasible schedule."}, "family": {"title": "Demand distribution", "body": "Select the distribution representing monthly demand. Normal demand is left-truncated at zero. Poisson and Geometric are count distributions scaled by kg per count. The app calculates the demand category and model automatically."}, "occurrence_probability": {"title": "Positive-demand months", "body": "The fraction of months with demand greater than zero, between 0 and 1. For example, 0.25 corresponds to demand in approximately 3 out of 12 months. Leave blank to use the distribution-implied frequency; positive-truncated Normal then assumes demand every month. A conflicting supplied frequency must be corrected before evaluation. This field retains the current methodology."}, "mu": {"title": "Underlying Normal mean", "body": "Location parameter of the underlying Normal distribution, in kg per month. Because demand is conditioned to be positive, this may differ from the actual mean displayed after classification."}, "sigma": {"title": "Underlying Normal standard deviation", "body": "Scale parameter of the underlying Normal distribution, in kg per month. The positive-truncated demand standard deviation may differ. Zero specifies deterministic positive demand when the mean is positive."}, "lam": {"title": "Monthly Poisson lambda", "body": "Positive count parameter of the monthly Poisson distribution. For direct demand, the mean powder requirement is lambda × kg per count and the probability of positive demand is 1 − exp(−lambda). Conditioning on positive counts changes the moments."}, "q": {"title": "Geometric q", "body": "Parameter q in P(G = g) = q(1 − q)^g for g = 0, 1, 2, … . It is the probability of zero counts in the direct distribution. Enter a value strictly between 0 and 1. The positive-count component has different moments."}, "unit": {"title": "Powder amount per count", "body": "Kilograms of usable powder represented by one Poisson or Geometric count. This converts the count distribution into powder demand. Enter a positive value."}, "excel": {"title": "Import common inputs", "body": "Import the supported .xlsx workbook layout with Parameters and Sources sheets. The existing layout supplies common parameters and the first three sources. Review the imported values; distribution controls remain editable."}, "coordination": {"title": "Replenishment coordination", "body": "SYN coordinates order releases so receipts arrive together. SIM releases orders together and receives each after its own lead time. IND uses source-specific replenishment controls while sharing physical stock. Compare all three evaluates the admissible policies for each dual-source configuration."}, "search_candidates": {"title": "Search candidates per alternative", "body": "Number of candidate parameter combinations evaluated for each configuration–policy alternative, from 10 to 500. A larger budget increases calculation time and may improve the solution found. This finite search does not certify global optimality."}, "simulation_years": {"title": "Evaluation years", "body": "Number of 360-day model years used to estimate performance after warm-up, from 1 to 50. Longer evaluation horizons can reduce simulation variability but take more time."}, "replications": {"title": "Validation replications", "body": "Number of independent validation demand paths, from 2 to 30. Selected candidates are evaluated on paths separate from the search sample. More replications improve uncertainty estimation but increase runtime."}, "max_review_days": {"title": "Maximum OUTL review interval", "body": "Upper bound on the searched review interval, in daily periods. It must be between 1 and 720 and at least the minimum interval. Applies to OUTL common or source-specific reviews."}, "min_review_days": {"title": "Minimum OUTL review interval", "body": "Lower bound on the searched review interval, in daily periods. It must be between 1 and 720 and no greater than the maximum interval. Applies to OUTL common or source-specific reviews."}, "warmup_years": {"title": "Warm-up years", "body": "Initial simulation years excluded from performance estimation, from 0 to 20. This reduces dependence on starting inventory and pipeline conditions. A model year contains 360 days."}, "training_replications": {"title": "Search replications", "body": "Number of demand paths used to evaluate candidates during the parameter search, from 1 to 10. Alternatives use common search demand realizations. Final validation uses a separate sample."}, "seed": {"title": "Random seed", "body": "Nonnegative integer controlling random generation. Reusing the same inputs, calculation settings and seed reproduces the calculation. Changing the seed can support search and simulation robustness checks."}, "scenario-name": {"title": "Scenario name", "body": "A descriptive name for this saved set of operating conditions, up to 120 characters. Editing and saving an existing scenario replaces its inputs and clears its previous result; saving as new retains the original."}, "import-scenarios": {"title": "Import a scenario list", "body": "Choose a scenario-list JSON file saved by this app. Checked scenarios are appended to your list. The complete import is rejected if any scenario is invalid. Full results JSON is an output archive, not the scenario-list input format."}, "variation-base": {"title": "Starting scenario", "body": "Saved scenario copied to create variations. All inputs except the selected variable remain unchanged. You can use a generated scenario as a new starting point to vary another input."}, "variation-field": {"title": "Input to vary", "body": "Select the demand, common cost, source or calculation input to change. Demand classification is recalculated for each resulting scenario using the fixed thresholds."}, "variation-values": {"title": "Variation values", "body": "Enter numeric values separated by commas. Each value creates a separate copy of the starting scenario. All values are checked before any variations are added."}, "sources": {"title": "Available powder sources", "body": "Source 1 is on-site production; other sources are external suppliers. The model evaluates each source alone and source 1 paired with each supplier. Add up to 10 sources in total. Physical powder is pooled. Capacity and scrap limits apply to expected annual flows."}, "simulation": {"title": "Calculation settings", "body": "Smooth and erratic demand use ROP; intermittent and lumpy demand use OUTL with Bernoulli occurrence and positive sizes. Both use the daily simulator. Each alternative has separately searched policy parameters. OUTL setup costs are charged only for positive source orders."}, "c_h": {"title": "Annual holding rate", "body": "Annual holding fraction applied to the share-weighted value of average positive powder inventory. For example, enter 0.15 for 15% per year."}, "c_cb": {"title": "Shortage penalty", "body": "Penalty in EUR for each kg of demand initially unmet. Each kg is charged once, even if it remains backordered for several periods. This is not a penalty per day of backlog."}, "c_ce": {"title": "Carbon cost", "body": "Monetary value in EUR per kg CO₂e. It is applied to powder and transport emissions in the effective costs. Enter 0 to exclude monetized emissions."}, "c_tc": {"title": "Transport cost rate", "body": "Transportation cost in EUR per kg per km. It applies to powder transport and unused scrap transported to the recycler."}, "c_te": {"title": "Transport emissions rate", "body": "Transportation emissions in kg CO₂e per kg per km. Multiplying by carbon cost gives the emissions contribution to the effective transport rate."}, "c_scrap": {"title": "Available scrap", "body": "Annual-average quantity of suitable scrap available, in kg per year. On-site powder production uses scrap according to the powder yield. Unused scrap is assumed sold."}, "c_yield": {"title": "Powder yield", "body": "Fraction of scrap converted into usable powder, greater than 0 and at most 1. For example, a yield of 0.8 gives 80 kg of usable powder from 100 kg of suitable scrap."}, "c_scrap_price": {"title": "Scrap selling price", "body": "Revenue in EUR per kg of unused scrap sold. Scrap revenue is subtracted from total annual cost."}, "c_scrap_distance": {"title": "Distance to scrap recycler", "body": "Transportation distance in km for unused scrap sold to the recycler. It is multiplied by the unused scrap quantity and effective transportation rate."}, "c_amortization": {"title": "Investment amortization", "body": "Positive number of years over which investment is spread. Annual investment cost equals selected-source investment divided by this period, without discounting or residual value."}, "c_service": {"title": "Immediate fill-rate target", "body": "Minimum required fraction of demand served immediately from available inventory. Enter 0.95 for 95%. It is a required input, not an achieved result or a stockout-free-cycle probability. Stochastic acceptance uses the estimated validation fill rate."}, "source.name": {"title": "Source name", "body": "A descriptive name for this powder source. Source 1 represents on-site production. Sources 2–10 represent purchased-powder suppliers."}, "source.lead": {"title": "Source lead time", "body": "Fixed replenishment lead time in 30-day months, up to 24 months. The value must correspond to a whole number of days; for example 0.5 means 15 days. SYN can delay physical release to synchronize receipts."}, "source.cp": {"title": "Powder unit cost", "body": "Production or purchase cost in EUR per kg of usable powder from this source, before monetized emissions. The effective cost also includes powder emissions multiplied by the carbon cost."}, "source.ep": {"title": "Powder emissions intensity", "body": "Powder-related emissions in kg CO₂e per kg of usable powder. These emissions are monetized using the common carbon cost when it is nonzero."}, "source.co": {"title": "Setup or ordering cost", "body": "Positive fixed cost in EUR per source order. ROP charges each fixed-size batch separately. OUTL charges the cost only when a positive replenishment quantity is ordered."}, "source.distance": {"title": "Powder transportation distance", "body": "Distance in km over which powder from this source is transported. Enter 0 if there is no transportation distance to include for on-site production."}, "source.capacity": {"title": "Annual source capacity", "body": "Expected annual usable-powder supply limit in kg per year. Leave blank for unlimited capacity. This is an annual-average constraint, not a hard batch or daily production limit."}, "source.investment": {"title": "Source investment", "body": "Investment in EUR associated with selecting this source. The annualized amount is calculated over the common amortization period. Enter 0 when there is no investment to include."}};
+function infoButton(key){const h=fieldInformation[key];if(!h)return '';return '<button type="button" class="info-button" data-help-key="'+esc(key)+'" popovertarget="field-information" aria-haspopup="dialog" aria-label="Information about '+esc(h.title)+'" title="Information about '+esc(h.title)+'"><span aria-hidden="true">i</span></button>';}
+function prepareFieldInformation(key){const h=fieldInformation[key];if(!h)return false;$('information-title').textContent=h.title;$('information-body').textContent=h.body;return true;}
+document.addEventListener('click',event=>{const b=event.target.closest('[data-help-key]');if(b)prepareFieldInformation(b.dataset.helpKey);});
+const labels={h:'Annual holding rate (fraction)',cb:'Shortage penalty (EUR/kg)',ce:'Carbon cost (EUR/kg CO₂e)',tc:'Transport cost (EUR/kg/km)',te:'Transport emissions (kg CO₂e/kg/km)',scrap:'Available scrap (kg/year)',yield:'Powder yield (fraction)',scrap_price:'Scrap selling price (EUR/kg)',scrap_distance:'Distance to scrap recycler (km)',amortization:'Investment amortization (years)',service:'Immediate fill-rate target (fraction)'};
+$('cost-inputs').innerHTML=Object.entries(labels).map(([k,v])=>`<div class="field"><div class="field-label"><label for="c_${k}">${v}</label>${infoButton("c_"+k)}</div><input type="number" min="0" step="any" id="c_${k}"></div>`).join('');
+const sourceKeys=['name','lead','cp','ep','co','distance','capacity','investment'];
+const sourceLabels=['Source','Lead (months)','Powder cost (EUR/kg)','Powder emissions (kg CO₂e/kg)','Setup/order (EUR)','Powder distance (km)','Annual capacity (kg)','Investment (EUR)'];
+let sourceIds=[];
+function sourceRow(s){
+ const j=s.id;
+ return '<tr id="source-row-'+j+'"><th>'+j+'</th>'+sourceKeys.map(k=>`<td><div class="source-field"><input id="s${j}_${k}" aria-label="Source ${j}: ${esc(sourceLabels[sourceKeys.indexOf(k)])}" ${k==='name'?'type="text"':'type="number" min="0" step="any"'} value="${esc(s[k]??'')}">${infoButton("source."+k)}</div></td>`).join('')+`<td>${j>3?'<button type="button" class="subtle" data-remove-source="'+j+'" aria-label="Remove source '+j+'">Remove</button>':''}</td></tr>`;
+}
+function updateSourceControls(){
+ $('add-source').disabled=sourceIds.length>=10||stepBusy;
+ $('source-count').textContent=sourceIds.length+' of 10 sources';
+}
+function resetSources(sources){
+ sourceIds=sources.map(s=>s.id);
+ $('source-inputs').innerHTML='<thead><tr><th>ID</th>'+sourceLabels.map(s=>'<th>'+esc(s)+'</th>').join('')+'<th>Actions</th></tr></thead><tbody id="source-rows">'+sources.map(sourceRow).join('')+'</tbody>';
+ updateSourceControls();
+}
+function clearSourceResults(){$('results').innerHTML='';lastResult=null;}
+function addSource(){
+ if(sourceIds.length>=10||stepBusy)return;
+ const j=Array.from({length:10},(_,i)=>i+1).find(i=>!sourceIds.includes(i));
+ const s={id:j,name:'Supplier '+j,lead:1,cp:null,ep:0,co:null,distance:0,capacity:null,investment:0};
+ $('source-rows').insertAdjacentHTML('beforeend',sourceRow(s));sourceIds.push(j);
+ clearSourceResults();updateSourceControls();$('s'+j+'_name').focus();
+}
+function removeSource(j){
+ if(j<=3||stepBusy)return;
+ $('source-row-'+j).remove();sourceIds=sourceIds.filter(i=>i!==j);
+ clearSourceResults();updateSourceControls();
+}
+$('add-source').onclick=addSource;
+$('source-inputs').addEventListener('click',e=>{
+ const button=e.target.closest('[data-remove-source]');if(button)removeSource(Number(button.dataset.removeSource));
+});
+$('source-inputs').addEventListener('input',clearSourceResults);
+
+function populate(v){
+ if(v.settings)savedExtraSettings={...v.settings};
+ if(v.mode)$('mode').value=v.mode;
+ if(v.monthly_demand)$('monthly').value=v.monthly_demand.join(', ');
+ if(v.demand)for(const [k,val] of Object.entries(v.demand))if($(k))$(k).value=val;
+ if(v.costs)for(const [k,val] of Object.entries(v.costs))if($('c_'+k))$('c_'+k).value=val;
+ if(v.sources)resetSources(v.sources);
+ if(v.sources)for(const s of v.sources)for(const k of sourceKeys)if(k in s)$(`s${s.id}_${k}`).value=s[k]??'';
+ if(v.settings){for(const key of ['min_review_days','max_review_days','warmup_years','training_replications','seed','search_candidates','simulation_years','replications','coordination'])if(v.settings[key]!==undefined)$(key).value=v.settings[key];$('pre').checked=v.settings.allow_pre_horizon;}
+ update();
+}
+function update(){
+ const known=$('mode').value==='known';$('known').classList.toggle('hidden',!known);$('uncertain').classList.toggle('hidden',known);
+ const family=$('family').value;for(const cls of ['normal','poisson','geometric','counts'])document.querySelectorAll('.'+cls).forEach(e=>e.classList.toggle('hidden',cls==='counts'?family==='Normal':cls!==family.toLowerCase()));
+ $('classification').textContent='';$('results').innerHTML='';lastResult=null;lockParameters();
+}
+function payload(){return {demand_first:true,mode:$('mode').value,monthly_demand:$('monthly').value.split(/[,;\s]+/).filter(Boolean).map(Number),demand:Object.fromEntries(['mu','sigma','lam','q','unit'].map(k=>[k,num(k)]).concat([['p',1],['family',$('family').value],['occurrence_probability',num('occurrence_probability')]])),costs:Object.fromEntries(Object.keys(labels).map(k=>[k,num('c_'+k)])),sources:sourceIds.map(j=>Object.fromEntries([['id',j],...sourceKeys.map(k=>[k,k==='name'?$(`s${j}_${k}`).value:k==='capacity'&&$(`s${j}_${k}`).value===''?null:num(`s${j}_${k}`)])])),settings:Object.assign({},savedExtraSettings,{adi_cutoff:1.32,cv2_cutoff:0.49},Object.fromEntries(['min_review_days','max_review_days','warmup_years','training_replications','seed'].map(k=>[k,num(k)]).concat([['allow_pre_horizon',$('pre').checked],['coordination',$('coordination').value],...['search_candidates','simulation_years','replications'].map(k=>[k,num(k)])])))};}
+async function request(path,data){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const value=await r.json();if(!r.ok)throw Error(value.error||'Calculation failed');return value;}
+function error(e){$('error').innerHTML='<p class="error">'+esc(e.message)+'</p>';}
+function classification(s){return `<p><span class="tag">${esc(s.category)}</span> → <strong>${esc(s.model)}</strong></p><p>Distribution: ${esc(s.distribution)}. ADI: ${fmt(s.ADI)}. Positive-size CV²: ${fmt(s.CV2)}.<br>Monthly mean: ${fmt(s.mean)} kg. Monthly standard deviation: ${fmt(s.sd)} kg.</p><small>${esc(s.detail)}</small>`;}
+$('mode').onchange=update;$('family').onchange=update;
+$('excel').onchange=async()=>{const file=$('excel').files[0];if(!file)return;try{$('import-status').textContent='Importing…';const reader=new FileReader();const encoded=await new Promise((resolve,reject)=>{reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});const imported=await request('/import_excel',{data:encoded});populate(imported);$('import-status').textContent='Imported. Review all inputs before calculating. '+(imported.import_warnings||[]).join(' ');}catch(e){$('import-status').textContent='';error(e);}};
+function table(headers,rows){return '<div class="scroll"><table><thead><tr>'+headers.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+fmt(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+function costChart(rows,title,note){
+ const items=rows.filter(row=>Number.isFinite(row.value));
+ if(!items.length)return '';
+ const min=Math.min(0,...items.map(row=>row.value)),max=Math.max(0,...items.map(row=>row.value));
+ const scale=max-min||1,zero=-min/scale*100;
+ return '<div class="comparison"><h3>'+esc(title)+'</h3><p class="help">'+esc(note)+'</p>'+items.map(row=>{
+  const width=Math.abs(row.value)/scale*100,left=row.value<0?zero-width:zero;
+  return '<div class="chart-row"><span>'+esc(row.label)+'</span><span class="chart-track" aria-hidden="true"><i class="'+(row.value<0?'credit':'')+'" style="left:'+left+'%;width:'+width+'%"></i></span><strong>€'+fmt(row.value)+'</strong></div>';
+ }).join('')+'</div>';
+}
+function show(result){
+ const b=result.best;
+ if(!b){
+  $('results').innerHTML='<div class="card"><h2>'+esc(result.model)+'</h2><p class="scenario-notice">No feasible solution was found within this evaluation. Review the alternative statuses below. A failed search does not establish that no feasible inventory policy exists.</p>'+table(['Configuration','Policy','Evaluation status'],result.configurations.map(r=>[r.configuration,r.policy??'Synchronized',r.status]))+'<p class="help">Check annual capacities, scrap availability and release restrictions. For uncertain demand, also review the search budget, bounds and simulation duration.</p><button id="download" type="button" class="subtle">Download results JSON</button></div>';
+  $('download').onclick=()=>downloadJSON(lastResult,'powder_inventory_results.json');return;
+ }
+ let body='<div class="card"><h2>'+esc(result.model)+'</h2>'+(result.characterization?classification(result.characterization):'');
+ body+='<div class="metrics"><div>Selected sources<strong>'+esc(b.configuration)+'</strong></div><div>Annual cost<strong>€'+fmt(b.annual_cost_eur)+'</strong></div>'+(b.fill_rate==null?'':'<div>Immediate fill rate<strong>'+fmt(100*b.fill_rate)+'%</strong></div>')+'</div>';
+ if(b.policy){
+  body+='<p>Policy: '+esc(b.policy)+'. Immediate fill rate: '+fmt(100*b.fill_rate)+'%. Target: '+fmt(100*b.service_target)+'%.</p>';
+  body+='<p>Average stock: '+fmt(b.average_inventory_kg)+' kg. Average backlog: '+fmt(b.average_backlog_kg)+' kg.</p>';
+  body+='<p>Annual cost 95% interval: '+b.annual_cost_ci95_eur.map(fmt).join(' to ')+'. Approximate fill-rate 95% interval: '+b.fill_rate_ci95.map(x=>fmt(100*x)+'%').join(' to ')+'.</p>';
+ }
+ if('Q_kg' in b)body+='<p>Total batch Q: '+fmt(b.Q_kg)+' kg. Common reorder point R: '+fmt(b.R_kg)+' kg.</p>';
+ if('S_kg' in b)body+='<p>Common review interval T: '+fmt(b.T_days)+' days. Common order-up-to level S: '+fmt(b.S_kg)+' kg.</p>';
+ if('lots' in b)body+='<p>'+b.orders_in_horizon+' replenishments over '+b.horizon_months+' months. Horizon cost: €'+fmt(b.horizon_cost_eur)+'.</p>';
+ body+='<h3>Source allocation and replenishment</h3>'+table(['Source','Share','Expected annual supply (kg)','Q per batch (kg)','Reorder point (kg)','Allocated / source target (kg)','Review (days)','SYN release offset (months)'],b.sources.map(s=>[s.name,fmt(100*s.fraction)+'%',s.annual_supply_kg,s.Q_kg??('lots' in b?'Scheduled lot':'Variable'),s.R_kg??'—',s.S_kg??'—',s.T_days??('lots' in b?'Monthly schedule':'Daily ROP'),s.release_offset_months]));
+ if(b.schedule)body+='<h3>Deterministic order schedule</h3>'+table(['Source','Release month','Receipt month','Quantity (kg)'],b.schedule.map(s=>[s.source,s.release_month,s.receipt_month,s.quantity_kg]));
+ const costNames={Cp:'Powder production / purchase',Co:'Ordering / setup',Ch:'Holding',Cb:'Initially unmet demand',Cpt:'Powder transportation',Cst:'Scrap transportation',Civ:'Annualized investment',Rev:'Scrap revenue (subtracted)'};
+ body+=costChart(Object.entries(b.costs).filter(([k,v])=>v!==0).map(([k,v])=>({label:costNames[k]||k,value:k==='Rev'?-v:v})),'Cost breakdown','EUR per year. Scrap revenue reduces net cost.');
+ body+='<h3>Annual costs</h3>'+table(['Element','EUR/year'],Object.entries(b.costs).map(([k,v])=>[costNames[k]||k,v]));
+ const ranked=result.configurations.filter(r=>r.status==='feasible'&&Number.isFinite(r.annual_cost_eur)).sort((a,b)=>a.annual_cost_eur-b.annual_cost_eur);
+ body+=costChart(ranked.slice(0,6).map(r=>({label:r.configuration+' · '+(r.policy??'Synchronized'),value:r.annual_cost_eur})),'Lowest-cost feasible options','Annual cost in EUR. Up to six options are shown; the full comparison follows.');
+ body+='<h3>Configuration comparison</h3>'+table(['Configuration','Policy','Status','Annual cost (EUR)','Fill rate','Average stock (kg)','Cost 95% interval'],result.configurations.map(r=>[r.configuration,r.policy??'Synchronized',r.status,r.annual_cost_eur??'—',r.fill_rate==null?'—':fmt(100*r.fill_rate)+'%',r.average_inventory_kg??'—',r.annual_cost_ci95_eur?.map(fmt).join(' to ')??'—']));
+ if(result.settings_used)body+='<h3>Evaluation settings</h3>'+table(['Setting','Value'],Object.entries(result.settings_used));
+ body+='<h3>Model assumptions</h3><ul>'+result.warnings.map(w=>'<li class="help">'+esc(w)+'</li>').join('')+'</ul><button id="download" class="subtle">Download results JSON</button></div>';
+ $('results').innerHTML=body;$('download').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(lastResult,null,2)],{type:'application/json'}));a.download='powder_inventory_results.json';a.click();URL.revokeObjectURL(a.href);};
+}
+$('calculate').onclick=async()=>{if(stepBusy||batchRunning)return;try{cleanError();stepBusy=true;renderWizard();$('calculate').disabled=true;$('busy').textContent='Calculating this scenario. The simulation may take a while…';const v=payload();lastResult=await request('/solve',v);lastResult.inputs=v;show(lastResult);}catch(e){error(e);}finally{stepBusy=false;renderWizard();$('calculate').disabled=false;$('busy').textContent='';}};
+
+let wizardStep='start';
+let demandClassification=null;
+let stepBusy=false;
+function route(){
+ if($('mode').value==='known')return ['start','demand','supply','review'];
+ return ['start','demand','classification','supply','policy','review'];
+}
+const stepTitles={start:'Demand knowledge',demand:'Demand information',classification:'Demand characterization',supply:'Supply and costs',policy:'Replenishment settings',review:'Review and calculate'};
+function renderWizard(){
+ const steps=route();
+ if(!steps.includes(wizardStep))wizardStep='start';
+ const index=steps.indexOf(wizardStep);
+ for(const step of Object.keys(stepTitles))$('step-'+step).classList.toggle('hidden',step!==wizardStep);
+ $('wizard-progress').textContent='Step '+(index+1)+' of '+steps.length+' · '+stepTitles[wizardStep];
+ $('wizard-steps').innerHTML=steps.map((step,i)=>'<li '+(i===index?'aria-current="step"':i<index?'class="is-complete"':'')+'><span class="step-index" aria-hidden="true">'+(i<index?'✓':i+1)+'</span>'+esc(stepTitles[step])+'</li>').join('');
+ $('wizard-meter').value=index+1;$('wizard-meter').max=steps.length;
+ $('wizard-back').classList.toggle('hidden',index===0);
+ $('wizard-next').classList.toggle('hidden',wizardStep==='review');
+ $('wizard-next').textContent=wizardStep==='demand'&&$('mode').value==='uncertain'?'Check demand characteristics':'Continue';
+ $('calculate').classList.toggle('hidden',wizardStep!=='review');
+ $('policy-step').classList.remove('hidden');
+ $('settings-step').classList.remove('hidden');
+ // Advanced settings stay collapsed unless the user opens them.
+ const rop=demandClassification?.model==='Reorder Point';
+ for(const id of ['min_review_days','max_review_days'])$(id).closest('.field').classList.toggle('hidden',rop);
+ 
+ for(const id of ['seed'])$(id).closest('.field').classList.toggle('hidden',false);
+ $('service-holder').classList.remove('hidden');
+ $('c_cb').closest('.field').classList.toggle('hidden',$('mode').value==='known');
+ $('results').classList.toggle('hidden',wizardStep!=='review');
+ document.querySelectorAll('input,select,textarea').forEach(e=>e.disabled=stepBusy);
+ $('home-view').disabled=stepBusy||batchRunning;
+ $('wizard-back').disabled=stepBusy;$('wizard-next').disabled=stepBusy;$('calculate').disabled=stepBusy;$('save-scenario').disabled=stepBusy;$('save-scenario-copy').disabled=stepBusy;updateSourceControls();
+}
+function lockParameters(){
+ demandClassification=null;
+ $('classification').innerHTML='';$('results').innerHTML='';lastResult=null;
+}
+function invalidateDemand(){lockParameters();}
+function cleanError(){$('error').innerHTML='';}
+function validateKnown(){
+ const values=payload().monthly_demand;
+ if(!values.length||values.length>60||values.some(x=>!Number.isFinite(x)||x<0)||values.reduce((a,b)=>a+b,0)<=0)
+  throw Error('Enter 1–60 nonnegative monthly demand quantities with a positive total.');
+}
+function makeReview(){
+ const v=payload(),known=v.mode==='known';
+ let body='<h2>Review your inputs</h2><p>Use Back to edit an answer. Calculate when these inputs are ready.</p>';
+ body+=table(['Demand choice','Value'],[['Known monthly demand',known?'Yes':'No'],['Model',known?'Wagner–Whitin':demandClassification.model]]);
+ if(known)body+=table(['Month','Demand (kg)'],v.monthly_demand.map((x,i)=>[i+1,x]));
+ else{
+  body+=classification(demandClassification);
+  const keys=v.demand.family==='Normal'?['mu','sigma']:v.demand.family==='Poisson'?['lam','unit']:['q','unit'];
+  body+=table(['Distribution input','Value'],[['Selected family',v.demand.family],...keys.map(k=>[k,v.demand[k]]),['Provided positive-month fraction',v.demand.occurrence_probability??'Distribution-implied']]);
+ }
+ body+='<h3>Sources</h3>'+table(['ID',...sourceLabels],v.sources.map(s=>[s.id,...sourceKeys.map(k=>s[k]??'Unlimited')]));
+ body+='<h3>Costs and shared parameters</h3>'+table(['Input','Value'],Object.entries(v.costs).filter(([k])=>!known||!['cb','service'].includes(k)).map(([k,x])=>[labels[k],x]));
+ if(known)body+='<p>Pre-horizon order releases: '+(v.settings.allow_pre_horizon?'Allowed':'Not allowed')+'.</p>';
+ else{
+  const names={compare:'Compare all three',synchronized:'Synchronized receipts',simultaneous:'Simultaneous order release',independent:'Coordinated source-specific ordering'};
+  const rows=[['Coordination',names[v.settings.coordination]],['Immediate fill-rate target',v.costs.service],['Search candidates',v.settings.search_candidates],['Evaluation years',v.settings.simulation_years],['Warm-up years',v.settings.warmup_years],['Search replications',v.settings.training_replications],['Validation replications',v.settings.replications],['Random seed',v.settings.seed]];
+  if(demandClassification.model==='Order-Up-To-Level')rows.push(['Minimum review interval (days)',v.settings.min_review_days],['Maximum review interval (days)',v.settings.max_review_days]);
+  body+='<h3>Policy and calculation settings</h3>'+table(['Setting','Value'],rows);
+ }
+ $('review-content').innerHTML=body;
+}
+$('wizard-next').onclick=async()=>{
+ if(stepBusy)return;
+ cleanError();stepBusy=true;renderWizard();
+ try{
+  const v=payload();
+  if(wizardStep==='start'&&!['known','uncertain'].includes(v.mode))throw Error('Choose Yes or No to continue.');
+  if(wizardStep==='demand'){
+   if(v.mode==='known')validateKnown();
+   else{
+    demandClassification=await request('/classify',v);
+    $('classification').innerHTML=classification(demandClassification);
+   }
+  }
+  if(wizardStep==='supply'||wizardStep==='policy')await request('/validate',v);
+  const steps=route();wizardStep=steps[steps.indexOf(wizardStep)+1];
+  if(wizardStep==='review')makeReview();
+ }catch(e){error(e);}finally{stepBusy=false;renderWizard();}
+};
+$('wizard-back').onclick=()=>{
+ if(stepBusy)return;cleanError();
+ const steps=route();wizardStep=steps[Math.max(0,steps.indexOf(wizardStep)-1)];renderWizard();
+};
+$('mode').onchange=()=>{update();wizardStep='start';renderWizard();};
+$('family').onchange=()=>{update();renderWizard();};
+for(const id of ['mu','sigma','lam','q','unit','occurrence_probability','monthly'])$(id).addEventListener('input',invalidateDemand);
+document.querySelectorAll('input,select,textarea').forEach(e=>e.addEventListener('input',()=>{$('results').innerHTML='';lastResult=null;}));
+const importHandler=$('excel').onchange;
+$('excel').onchange=async()=>{await importHandler();wizardStep='demand';renderWizard();};
+// Keep all entered values in the same DOM while changing steps.
+populate(defaults);
+$('mode').insertAdjacentHTML('afterbegin','<option value="">Choose an answer</option>');
+$('mode').value='';
+const serviceLabel=$('c_service').closest('.field');$('service-holder').appendChild(serviceLabel);
+$('policy-step').querySelector('h2').innerHTML='Replenishment coordination'+infoButton('simulation');
+$('supply-step').querySelector('h2').textContent='Supply and cost information';
+renderWizard();
+// Scenario snapshots and sequential evaluation use the same solver as a single run.
+const MAX_SCENARIOS=100;
+let scenarios=[], nextScenarioId=1, batchBusy=false, stopRequested=false, editingScenarioId=null;
+const clone=v=>JSON.parse(JSON.stringify(v));
+let activeWorkspace='home';
+const routeForWorkspace=view=>view==='batch'?'/scenarios':view==='single'?'/single':'/';
+function workspaceForPath(){const path=(window.location?.pathname||'/').replace(/\/$/,'');return path==='/scenarios'?'batch':path==='/single'?'single':'home';}
+function setWorkspace(view, updateURL=true){
+ activeWorkspace=view;
+ const route=routeForWorkspace(view);
+ if(updateURL&&window.history&&window.location.pathname!==route)window.history.pushState({view},'',route);
+ document.title=view==='batch'?'Scenario analysis | Powder inventory planning':view==='single'?'Single scenario | Powder inventory planning':'Powder inventory planning';
+ $('home-workspace').classList.toggle('hidden',view!=='home');
+ $('app-nav').classList.toggle('hidden',view==='home');
+ $('workspace-title').textContent=view==='batch'?'Multiple-scenario analysis':'Single-scenario calculation';
+ $('workspace-description').textContent=view==='batch'?'Vary your assumptions, run scenarios together, and compare their outcomes.':'Set your demand and supply assumptions, then evaluate your inventory options.';
+ $('single-workspace').classList.toggle('hidden',view!=='single');
+ $('batch-workspace').classList.toggle('hidden',view!=='batch');
+}
+function batchError(e){$('batch-error').innerHTML=e?'<p class="error">'+esc(e.message||e)+'</p>':'';}
+function downloadText(text,name,type){
+ const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type}));
+ a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);
+}
+function downloadJSON(value,name){downloadText(JSON.stringify(value,null,2),name,'application/json');}
+function csvText(rows){
+ return '\uFEFF'+rows.map(row=>row.map(v=>{
+  if(v===null||v===undefined)return '""';
+  let t=String(v);if(typeof v==='string'&&/^[=+@\-\t\r]/.test(t))t="'"+t;
+  return '"'+t.replace(/"/g,'""')+'"';
+ }).join(',')).join('\r\n');
+}
+function scenarioModel(s){return s.characterization?.model||(s.inputs.mode==='known'?'Wagner–Whitin':'Not characterized');}
+function uniqueName(name){
+ const base=String(name||'Scenario').trim().slice(0,120)||'Scenario';let n=base,i=2;
+ while(scenarios.some(s=>s.name===n))n=base.slice(0,110)+' ('+i+++')';return n;
+}
+async function checkedScenario(inputs,name){
+ const v=clone(inputs);v.settings={...v.settings,adi_cutoff:1.32,cv2_cutoff:0.49};await request('/validate',v);
+ const characterization=v.mode==='known'?null:await request('/classify',v);
+ return {id:nextScenarioId++,name:String(name||'Scenario').trim().slice(0,120)||'Scenario',inputs:v,characterization,state:'Ready',result:null,error:null};
+}
+function setBatchBusy(value){batchBusy=value;renderScenarios();}
+function renderScenarios(){
+ $('batch-count').textContent=scenarios.length+' / '+MAX_SCENARIOS;
+ $('batch-empty').classList.toggle('hidden',scenarios.length>0);$('variation-card').classList.toggle('hidden',!scenarios.length);
+ const oldBase=$('variation-base').value;
+ $('variation-base').innerHTML=scenarios.map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('');
+ if(scenarios.some(s=>String(s.id)===oldBase))$('variation-base').value=oldBase;
+ refreshVariationFields();
+ $('scenario-queue').innerHTML=scenarios.length?'<div class="scroll"><table class="scenario-table"><thead><tr><th>Scenario</th><th>Demand model</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+scenarios.map(s=>'<tr><td><input class="batch-name" data-rename-scenario="'+s.id+'" aria-label="Scenario name" maxlength="120" value="'+esc(s.name)+'">'+infoButton('scenario-name')+'</td><td>'+esc(scenarioModel(s))+'</td><td>'+esc(s.state)+(s.error?'<small class="danger">'+esc(s.error)+'</small>':'')+'</td><td><div class="actions"><button class="subtle compact" data-scenario-action="edit" data-id="'+s.id+'">Edit inputs</button><button class="subtle compact" data-scenario-action="duplicate" data-id="'+s.id+'">Duplicate</button><button class="subtle compact" data-scenario-action="remove" data-id="'+s.id+'">Remove</button></div></td></tr>').join('')+'</tbody></table></div>':'<p class="help">No saved scenarios yet.</p>';
+ for(const el of $('batch-workspace').querySelectorAll('button,input,select'))el.disabled=batchRunning||batchBusy;
+ $('home-view').disabled=stepBusy||batchRunning||batchBusy;
+ $('stop-scenarios').disabled=stopRequested;$('stop-scenarios').classList.toggle('hidden',!batchRunning);
+ $('run-scenarios').disabled=!scenarios.length||batchRunning||batchBusy;
+ $('resume-scenarios').disabled=!scenarios.some(s=>!s.result)||batchRunning||batchBusy;
+ $('clear-scenarios').disabled=!scenarios.length||batchRunning||batchBusy;
+ $('export-scenarios').disabled=!scenarios.length||batchRunning||batchBusy;
+ renderBatchSummary();
+}
+function refreshVariationFields(){
+ const s=scenarios.find(s=>String(s.id)===$('variation-base').value)||scenarios[0];if(!s)return;
+ const old=$('variation-field').value;
+ const fields=[['demand_scale','Demand size multiplier']];
+ if(s.inputs.mode==='uncertain'){
+  if(s.inputs.demand.family==='Normal')fields.push(['demand.mu','Underlying Normal mean (kg)'],['demand.sigma','Underlying Normal standard deviation (kg)']);
+  if(s.inputs.demand.family==='Poisson')fields.push(['demand.lam','Poisson lambda'],['demand.unit','Powder amount per count (kg)']);
+  if(s.inputs.demand.family==='Geometric')fields.push(['demand.q','Geometric q'],['demand.unit','Powder amount per count (kg)']);
+  fields.push(['demand.occurrence_probability','Fraction of positive-demand months'],['costs.service','Immediate fill-rate target (fraction)']);
+ }
+ for(const [k,label] of Object.entries(labels))if(k!=='service'&&(s.inputs.mode!=='known'||k!=='cb'))fields.push(['costs.'+k,label]);
+ for(const source of s.inputs.sources)for(const [i,k] of sourceKeys.entries())if(k!=='name')fields.push(['source.'+source.id+'.'+k,'Source '+source.id+' — '+sourceLabels[i]]);
+ if(s.inputs.mode==='uncertain')fields.push(['settings.seed','Random seed'],['settings.search_candidates','Search candidates per alternative']);
+ $('variation-field').innerHTML=fields.map(([v,label])=>'<option value="'+v+'">'+esc(label)+'</option>').join('');
+ if(fields.some(([v])=>v===old))$('variation-field').value=old;
+ updateVariationHelp();
+}
+function updateVariationHelp(){
+ const key=$('variation-field').value;
+ fieldInformation['variation-values'].body=key==='demand_scale'?'Use positive multipliers such as 0.8, 1, 1.2. Known monthly quantities are scaled together. For uncertain demand, positive demand sizes are scaled while occurrence probability and positive-size CV² stay unchanged.':key==='demand.occurrence_probability'?'Use fractions such as 0.3 or 0.5. Occurrence inputs must agree with the distribution where the direct-demand branch applies.':key.endsWith('.lead')?'Lead times are in 30-day months and must correspond to whole days. For example: 0.5, 1, 2.':'Values replace this input in a fresh copy of the starting scenario. Other inputs stay unchanged.';
+}
+function changedInputs(base,key,value){
+ const v=clone(base);
+ if(key==='demand_scale'){
+  if(value<=0)throw Error('Demand size multipliers must be positive.');
+  if(v.mode==='known')v.monthly_demand=v.monthly_demand.map(x=>x*value);
+  else if(v.demand.family==='Normal'){v.demand.mu*=value;v.demand.sigma*=value;}
+  else v.demand.unit*=value;
+ }else if(key.startsWith('source.')){const [,id,field]=key.split('.');v.sources.find(s=>s.id===Number(id))[field]=value;}
+ else{const [group,field]=key.split('.');v[group][field]=value;}
+ return v;
+}
+function renderBatchSummary(){
+ const done=scenarios.filter(s=>s.result||s.error);$('batch-outputs').classList.toggle('hidden',!done.length);
+ if(!done.length){$('batch-summary').innerHTML='';return;}
+ const withPlan=done.filter(s=>s.result?.best).length;
+ $('batch-summary').innerHTML='<div class="metrics"><div>Scenarios evaluated<strong>'+done.length+'</strong></div><div>Feasible plans found<strong>'+withPlan+'</strong></div><div>Without a feasible plan<strong>'+(done.length-withPlan)+'</strong></div></div><div class="scroll"><table><thead><tr><th>Scenario</th><th>Model</th><th>Outcome</th><th>Selected sources</th><th>Policy</th><th>Annual cost (EUR)</th><th>Immediate fill rate</th><th>Details</th></tr></thead><tbody>'+done.map(s=>{
+  const b=s.result?.best;return '<tr><td>'+esc(s.name)+'</td><td>'+esc(s.result?.model||scenarioModel(s))+'</td><td>'+esc(s.state)+'</td><td>'+esc(b?.configuration??'—')+'</td><td>'+esc(b?.policy||(b?'Synchronized schedule':'—'))+'</td><td>'+fmt(b?.annual_cost_eur??'—')+'</td><td>'+(b?.fill_rate==null?'—':fmt(b.fill_rate*100)+'%')+'</td><td>'+(s.result?'<button class="subtle compact" data-view-result="'+s.id+'" '+(batchRunning?'disabled':'')+'>View results</button>':esc(s.error))+'</td></tr>';
+ }).join('')+'</tbody></table></div>';
+ for(const id of ['export-batch-json','export-batch-csv','export-alternatives-csv'])$(id).disabled=batchRunning||batchBusy;
+}
+async function addCurrentScenario(asNew=false){
+ if(batchBusy||batchRunning||stepBusy)return;
+ cleanError();$('save-scenario').disabled=true;
+ try{
+  const existing=asNew?null:scenarios.find(s=>s.id===editingScenarioId);
+  if(!existing&&scenarios.length>=MAX_SCENARIOS)throw Error('The list can contain up to '+MAX_SCENARIOS+' scenarios. Save this list before starting another.');
+  const name=$('scenario-name').value.trim()||'Baseline';
+  const s=await checkedScenario(payload(),existing?name:uniqueName(name));
+  if(existing){s.id=existing.id;scenarios[scenarios.indexOf(existing)]=s;}else scenarios.push(s);
+  editingScenarioId=null;$('save-scenario').textContent='Add to scenario analysis';$('save-scenario-copy').classList.add('hidden');$('scenario-save-notice').textContent='';
+  $('scenario-name').value='';batchError(null);renderScenarios();setWorkspace('batch');
+ }catch(e){error(e);}finally{$('save-scenario').disabled=false;}
+}
+async function generateVariations(){
+ if(batchBusy||batchRunning)return;batchError(null);setBatchBusy(true);
+ try{
+  const base=scenarios.find(s=>String(s.id)===$('variation-base').value)||scenarios[0];if(!base)throw Error('Save a starting scenario first.');
+  const raw=$('variation-values').value.trim();
+  if(!raw)throw Error('Enter at least one value, separated by commas.');
+  const tokens=raw.split(/[,;\s]+/).filter(Boolean),values=[...new Set(tokens.map(Number))];
+  if(values.some(v=>!Number.isFinite(v)))throw Error('Use numeric values, for example: 0.85, 0.90, 0.95.');
+  if(scenarios.length+values.length>MAX_SCENARIOS)throw Error('This would exceed '+MAX_SCENARIOS+' scenarios. Use fewer values.');
+  const key=$('variation-field').value,label=$('variation-field').selectedOptions[0].textContent;
+  const additions=[];
+  for(const v of values){
+   try{additions.push(await checkedScenario(changedInputs(base.inputs,key,v),base.name+' — '+label+': '+v));}
+   catch(e){throw Error('Value '+v+': '+e.message+' No variations were added.');}
+  }
+  for(const s of additions){s.name=uniqueName(s.name);scenarios.push(s);}
+  $('variation-values').value='';$('batch-status').textContent=additions.length+' variations added. Review the list before running.';
+ }catch(e){batchError(e);}finally{setBatchBusy(false);}
+}
+async function loadScenario(id,withResult=false){
+ if(batchRunning||batchBusy)return;const s=scenarios.find(s=>s.id===id);if(!s)return;
+ populate(clone(s.inputs));$('scenario-name').value=s.name;demandClassification=clone(s.characterization);
+ editingScenarioId=withResult?null:s.id;$('save-scenario').textContent=withResult?'Add to scenario analysis':'Save scenario changes';$('save-scenario-copy').classList.toggle('hidden',withResult);$('scenario-save-notice').textContent=withResult?'':'You are editing '+s.name+'. Saving changes replaces its saved inputs and clears its previous results.';
+ wizardStep=withResult?'review':'demand';if(withResult){makeReview();lastResult=clone(s.result);lastResult.inputs=clone(s.inputs);show(lastResult);}
+ renderWizard();setWorkspace('single');cleanError();
+}
+async function runScenarios(remainingOnly=false){
+ if(batchRunning||batchBusy||!scenarios.length)return;
+ const pending=remainingOnly?scenarios.filter(s=>!s.result):scenarios;
+ if(!pending.length)return;
+ batchError(null);batchRunning=true;stopRequested=false;
+ for(const s of pending){s.state='Waiting';s.result=null;s.error=null;}
+ let completed=scenarios.length-pending.length;
+ $('batch-progress').classList.remove('hidden');$('batch-progress').value=completed;$('batch-progress').max=scenarios.length;
+ renderScenarios();
+ try{
+  for(const s of pending){
+   if(stopRequested)break;
+   s.state='Running';$('batch-status').textContent='Running '+(completed+1)+' of '+scenarios.length+': '+s.name+'. Please keep this tab open.';renderScenarios();
+   try{
+    const r=await request('/solve',clone(s.inputs));r.inputs=clone(s.inputs);s.result=r;
+    s.state=r.best?'Completed':(r.status||'No feasible solution found');
+   }catch(e){s.state='Evaluation failed';s.error=e.message;}
+   completed++;$('batch-progress').value=completed;renderScenarios();
+  }
+ }finally{
+  for(const s of scenarios)if(s.state==='Waiting')s.state='Not run (stopped)';
+  batchRunning=false;renderScenarios();
+  const successful=scenarios.filter(s=>s.result?.best).length,failed=scenarios.filter(s=>s.error).length;
+  $('batch-status').textContent=(stopRequested?'Stopped. ':'Finished. ')+completed+' of '+scenarios.length+' evaluated; '+successful+' with a feasible solution found'+(failed?'; '+failed+' failed evaluations':'')+'.';
+ }
+}
+function sourceControls(b){return b?JSON.stringify((b.sources||[]).map(s=>({id:s.id,share:s.fraction,Q_kg:s.Q_kg,R_kg:s.R_kg,S_kg:s.S_kg,T_days:s.T_days}))):'';}
+function summaryCSV(){
+ const rows=[['scenario_id','scenario_name','evaluation_status','error','model','selected_sources','policy','annual_cost_eur','fill_rate_fraction','average_inventory_kg','cost_ci95_lower_eur','cost_ci95_upper_eur','source_parameters_json','inputs_json']];
+ for(const s of scenarios){const b=s.result?.best;rows.push([s.id,s.name,s.state,s.error, s.result?.model||scenarioModel(s),b?.configuration,b?.policy||(b?'synchronized':null),b?.annual_cost_eur,b?.fill_rate,b?.average_inventory_kg,b?.annual_cost_ci95_eur?.[0],b?.annual_cost_ci95_eur?.[1],sourceControls(b),JSON.stringify(s.inputs)]);}return csvText(rows);
+}
+function alternativesCSV(){
+ const components=['Cp','Co','Ch','Cb','Cpt','Cst','Civ','Rev'];
+ const rows=[['scenario_id','scenario_name','model','configuration','policy','status','annual_cost_eur','fill_rate_fraction','average_inventory_kg',...components.map(c=>c+'_eur_per_year'),'source_parameters_json','inputs_json']];
+ for(const s of scenarios){const alternatives=s.result?.configurations||[];
+  if(!alternatives.length)rows.push([s.id,s.name,scenarioModel(s),'','',s.error||s.state,'','','',...components.map(()=>''),'',JSON.stringify(s.inputs)]);
+  for(const r of alternatives)rows.push([s.id,s.name,s.result.model,r.configuration,r.policy||'synchronized',r.status,r.annual_cost_eur,r.fill_rate,r.average_inventory_kg,...components.map(c=>r.costs?.[c]),sourceControls(r),JSON.stringify(s.inputs)]);
+ }return csvText(rows);
+}
+function confirmHomeNavigation(){return window.confirm('Are you sure you want to return to the Home page? Your current inputs, saved scenarios and results will remain available in this tab.');}
+$('home-view').onclick=()=>{if(!stepBusy&&!batchRunning&&!batchBusy&&confirmHomeNavigation())setWorkspace('home');};
+$('choose-single').onclick=()=>setWorkspace('single');
+$('choose-multiple').onclick=()=>{renderScenarios();setWorkspace('batch');};
+$('configure-baseline').onclick=()=>setWorkspace('single');
+$('load-demo-scenarios').onclick=async()=>{
+ if(batchRunning||batchBusy)return;batchError(null);setBatchBusy(true);
+ try{
+  const response=await fetch('/examples/scenarios_demo.json');if(!response.ok)throw Error('The demonstration file could not be loaded. Import examples/scenarios_demo.json instead.');
+  const data=await response.json();if(scenarios.length+data.scenarios.length>MAX_SCENARIOS)throw Error('The scenario list is full.');
+  const additions=[];for(const s of data.scenarios)additions.push(await checkedScenario(s.inputs,s.name));
+  for(const s of additions){s.name=uniqueName(s.name);scenarios.push(s);}
+  $('batch-status').textContent='Demonstration scenarios loaded. These example inputs are not results for the article. Choose Run all scenarios to calculate.';
+ }catch(e){batchError(e);}finally{setBatchBusy(false);}
+};
+$('save-scenario').onclick=()=>addCurrentScenario();
+$('save-scenario-copy').onclick=()=>addCurrentScenario(true);
+$('variation-base').onchange=refreshVariationFields;$('variation-field').onchange=updateVariationHelp;
+$('generate-scenarios').onclick=generateVariations;
+$('scenario-queue').addEventListener('change',e=>{const id=Number(e.target.dataset.renameScenario);const s=scenarios.find(s=>s.id===id);if(s&&!batchRunning&&!batchBusy){s.name=e.target.value.trim().slice(0,120)||'Scenario '+id;renderScenarios();}});
+$('scenario-queue').addEventListener('click',async e=>{
+ const b=e.target.closest('[data-scenario-action]');if(!b||batchRunning||batchBusy)return;const id=Number(b.dataset.id),s=scenarios.find(s=>s.id===id);if(!s)return;
+ if(b.dataset.scenarioAction==='edit')return loadScenario(id);
+ if(b.dataset.scenarioAction==='remove')scenarios=scenarios.filter(s=>s.id!==id);
+ if(b.dataset.scenarioAction==='duplicate'){
+  if(scenarios.length>=MAX_SCENARIOS){batchError(Error('The list is limited to '+MAX_SCENARIOS+' scenarios.'));return;}
+  scenarios.push({...clone(s),id:nextScenarioId++,name:uniqueName(s.name+' copy'),state:'Ready',result:null,error:null});
+ }
+ renderScenarios();
+});
+$('batch-summary').addEventListener('click',e=>{const b=e.target.closest('[data-view-result]');if(b)loadScenario(Number(b.dataset.viewResult),true);});
+$('run-scenarios').onclick=()=>runScenarios();
+$('resume-scenarios').onclick=()=>runScenarios(true);
+$('stop-scenarios').onclick=()=>{stopRequested=true;$('stop-scenarios').disabled=true;$('batch-status').textContent='Stopping after the current scenario finishes. Completed results will remain available.';};
+$('clear-scenarios').onclick=()=>{if(batchRunning||batchBusy)return;if(scenarios.length&&!window.confirm('Clear the scenario list and its results? Save your list or download results first if you need them.'))return;scenarios=[];renderScenarios();$('batch-status').textContent='';$('batch-progress').classList.add('hidden');};
+$('export-scenarios').onclick=()=>downloadJSON({format:'powder-inventory-scenarios',schema_version:1,app_version:'8.0',scenarios:scenarios.map(s=>({name:s.name,inputs:s.inputs}))},'powder_scenarios.json');
+$('import-scenarios').onchange=async()=>{
+ const file=$('import-scenarios').files[0];if(!file||batchRunning||batchBusy)return;batchError(null);setBatchBusy(true);
+ try{
+  if(file.size>5*1024*1024)throw Error('Use a scenario JSON file smaller than 5 MB.');
+  let data;try{data=JSON.parse(await file.text());}catch{throw Error('This file is not valid JSON. Choose a saved scenario list.');}
+  if(data.format!=='powder-inventory-scenarios'||data.schema_version!==1||!Array.isArray(data.scenarios)||!data.scenarios.length)throw Error('Choose a scenario list saved by this app (schema version 1).');
+  if(scenarios.length+data.scenarios.length>MAX_SCENARIOS)throw Error('Import would exceed '+MAX_SCENARIOS+' scenarios. Clear or shorten the existing list first.');
+  const additions=[];
+  for(const [i,s] of data.scenarios.entries()){
+   try{if(!s.inputs||typeof s.name!=='string')throw Error('Missing scenario name or inputs.');additions.push(await checkedScenario(s.inputs,s.name));}
+   catch(e){throw Error('Scenario '+(i+1)+': '+e.message+' Nothing was imported.');}
+  }
+  for(const s of additions){s.name=uniqueName(s.name);scenarios.push(s);}
+  $('batch-status').textContent=additions.length+' scenarios imported and checked. Existing scenarios were retained.';
+ }catch(e){batchError(e);}finally{$('import-scenarios').value='';setBatchBusy(false);}
+};
+$('export-batch-json').onclick=()=>downloadJSON({format:'powder-inventory-batch-results',schema_version:1,app_version:'8.0',exported_at:new Date().toISOString(),scenarios},'powder_batch_results.json');
+$('export-batch-csv').onclick=()=>downloadText(summaryCSV(),'powder_scenario_comparison.csv','text/csv;charset=utf-8');
+$('export-alternatives-csv').onclick=()=>downloadText(alternativesCSV(),'powder_all_alternatives.csv','text/csv;charset=utf-8');
+renderScenarios();
+setWorkspace(workspaceForPath(),false);
+if(window.addEventListener)window.addEventListener('popstate',()=>{
+ if(batchRunning||batchBusy||stepBusy){window.history.replaceState({view:activeWorkspace},'',routeForWorkspace(activeWorkspace));return;}
+ const destination=workspaceForPath();
+ if(destination==='home'&&activeWorkspace!=='home'&&!confirmHomeNavigation()){window.history.pushState({view:activeWorkspace},'',routeForWorkspace(activeWorkspace));return;}
+ setWorkspace(destination,false);
+});
+
+</script></body></html>

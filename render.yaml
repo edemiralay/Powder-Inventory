@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: powder-inventory
+    runtime: python
+    region: frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -c gunicorn.conf.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: POWDER_DOMAIN
+        value: powder.demiralays.com
+      - key: POWDER_USERNAME
+        sync: false
+      - key: POWDER_PASSWORD
+        sync: false
+      - key: POWDER_SECRET_KEY
+        generateValue: true
